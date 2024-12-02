@@ -58,28 +58,38 @@ class Solution:
         counter = 0
         not_far = self.is_not_too_far(tup)
         if not not_far:
-            counter += 1
+            counter = 1
             tup, not_far = self.func_iter(tup, self.is_not_too_far)
 
         if not not_far:
             return False
 
+        result = self.is_desc(tup) or self.is_asc(tup)
+        if result:
+            return True
+
         if counter:
-            result = self.is_desc(tup) or self.is_asc(tup)
+            return False
         else:
             result = self.func_iter(tup, self.is_desc)[1] or self.func_iter(tup, self.is_asc)[1]
+            return result
 
-        return result
+    @staticmethod
+    def check(tup):
+        dist = [tup[i] - tup[i + 1] for i in range(len(tup) - 1)]
+        monotonic = all(x > 0 for x in dist) or all(x < 0 for x in dist)
+        return all([1 <= abs(item) <= 3 for item in dist]) and monotonic
+
 
     def first_calc(self):
-        return sum(map(self.tuple_check, self.data))
+        return sum(map(self.check, self.data))
 
     def second_calc(self):
-        return sum(map(self.tuple_check2, self.data))
+        return sum(map(lambda x: sum([self.check(x[:i] + x[i + 1:]) for i in range(len(x))]) > 0, self.data))
 
-    # def print_out(self):
-    #     for item in self.data:
-    #         print(f"{item} -> {self.tuple_check2(item)}")
+    def print_out(self):
+        for item in self.data:
+            print(f"{item} -> {self.tuple_check2(item)}")
 
 
 if __name__ == '__main__':
