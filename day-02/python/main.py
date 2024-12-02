@@ -15,7 +15,7 @@ class Solution:
         self.data = self.input_open(file_path)
 
     @staticmethod
-    def is_asc(tup: tuple, thr=0) -> bool:
+    def is_asc(tup: tuple) -> bool:
         result = True
         for idx in range(0, len(tup) - 1):
             if tup[idx] >= tup[idx + 1]:
@@ -24,7 +24,7 @@ class Solution:
         return result
 
     @staticmethod
-    def is_desc(tup: tuple, thr=0) -> bool:
+    def is_desc(tup: tuple) -> bool:
         result = True
         for idx in range(0, len(tup) - 1):
             if tup[idx] <= tup[idx + 1]:
@@ -33,7 +33,7 @@ class Solution:
         return result
 
     @staticmethod
-    def is_too_far(tup, thr=0):
+    def is_not_too_far(tup):
         result = True
         for idx in range(0, len(tup) - 1):
             diff = abs(tup[idx] - tup[idx + 1])
@@ -42,13 +42,48 @@ class Solution:
                 break
         return result
 
-    def tuple_check(self, tup: tuple, thr=0) -> bool:
-        return self.is_too_far(tup) and (self.is_asc(tup) or self.is_desc(tup))
+    @staticmethod
+    def func_iter(tup, f):
+        for idx in range(len(tup)):
+            test_lst = list(tup)
+            test_lst.pop(idx)
+            if f(test_lst):
+                return test_lst, True
+        return tup, False
+
+    def tuple_check(self, tup: tuple) -> bool:
+        return self.is_not_too_far(tup) and (self.is_asc(tup) or self.is_desc(tup))
+
+    def tuple_check2(self, tup: tuple) -> bool:
+        counter = 0
+        not_far = self.is_not_too_far(tup)
+        if not not_far:
+            counter += 1
+            tup, not_far = self.func_iter(tup, self.is_not_too_far)
+
+        if not not_far:
+            return False
+
+        if counter:
+            result = self.is_desc(tup) or self.is_asc(tup)
+        else:
+            result = self.func_iter(tup, self.is_desc)[1] or self.func_iter(tup, self.is_asc)[1]
+
+        return result
 
     def first_calc(self):
         return sum(map(self.tuple_check, self.data))
+
+    def second_calc(self):
+        return sum(map(self.tuple_check2, self.data))
+
+    # def print_out(self):
+    #     for item in self.data:
+    #         print(f"{item} -> {self.tuple_check2(item)}")
 
 
 if __name__ == '__main__':
     sol = Solution()
     print(sol.first_calc())
+    print(sol.second_calc())
+    # sol.print_out()
