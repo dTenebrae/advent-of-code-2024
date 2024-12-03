@@ -15,7 +15,7 @@ class Solution:
 
     def __init__(self, file_path='../input.txt'):
         self.data = self.input_open(file_path)
-        self.re_first = re.compile(r"mul\((\d+),(\d+)\)", re.MULTILINE)
+        self.re_first = re.compile(r"mul\((\d+),(\d+)\)")
         self.re_second = re.compile(r"mul\(\d+,\d+\)|do\(\)|don't\(\)")
 
     @staticmethod
