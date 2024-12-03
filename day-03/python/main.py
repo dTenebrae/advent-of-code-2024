@@ -27,20 +27,6 @@ class Solution:
     def first_calc(self):
         return sum([self.re_mul(self.re_first.findall(item)) for item in self.data.split('\n')])
 
-    # def second_calc(self):
-    #     lst = []
-    #     flag = True
-    #     for item in self.data:
-    #         for idx, slc in enumerate(item.split("don't()")):
-    #             if idx == 0 and flag:
-    #                 lst.append(slc)
-    #                 flag = False
-    #                 continue
-    #             if "do()" in slc:
-    #                 lst.append(slc[slc.index("do()"):])
-    #
-    #     return sum([self.re_mul(self.re.findall(item)) for item in lst])
-
     def second_calc(self):
         matches = self.re_second.findall(self.data)
 
