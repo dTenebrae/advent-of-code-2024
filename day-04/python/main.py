@@ -12,25 +12,38 @@ class Solution:
         }
         try:
             with open(file_path, "r") as f:
+                # This easy to read construction converting input to list of lists of corresponding digits
                 data = list(map(lambda x: list(map(lambda y: conv_map[y], list(x.strip()))), f.readlines()))
         except FileNotFoundError:
             print("File not found. Exiting")
             exit(1)
 
+        # Create some padding for right and bottom. In our scanning algorithm that's enough
         return np.pad(np.array(data),
                       [(0, 3), (0, 3)],
                       mode='constant',
                       constant_values=-1)
 
     def get_windows(self, window_shape=(4, 4)):
+        """
+        Create sequence of 2d-windows with stride 1
+        """
         return np.lib.stride_tricks.sliding_window_view(self.data, window_shape=window_shape)
 
     @staticmethod
     def test_seq(seq):
+        """
+        Test a sequence (1d array) for being monotonic
+        """
         diff = np.diff(seq)
         return all(diff == 1) or all(diff == -1)
 
     def cnt_window_first(self, arr):
+        """
+        Testing 2 diagonals and 1st row and column for being monotonic and sum that
+        :param arr:
+        :return:
+        """
         return sum(
             (
                 self.test_seq(arr[:, 0]),
@@ -44,6 +57,7 @@ class Solution:
 
     def final_count(self, f, window_shape=(4, 4), change_x=False):
         result = 0
+
         if change_x:
             self.data[self.data == 1] = -10
 
