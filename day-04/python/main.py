@@ -1,6 +1,4 @@
-import sys
 import numpy as np
-np.set_printoptions(threshold=sys.maxsize)
 
 class Solution:
 
@@ -19,15 +17,41 @@ class Solution:
             print("File not found. Exiting")
             exit(1)
 
-        return np.array(data)
+        return np.pad(np.array(data),
+                      [(0, 3), (0, 3)],
+                      mode='constant',
+                      constant_values=666)
 
     def get_windows(self):
         return np.lib.stride_tricks.sliding_window_view(self.data, window_shape=(4, 4))
 
+    @staticmethod
+    def test_seq(seq):
+        diff = np.diff(seq)
+        return all(diff == 1) or all(diff == -1)
+
+    def cnt_window(self, arr):
+        return sum(
+            (
+                self.test_seq(arr[:, 0]),
+                self.test_seq(arr[0, :]),
+                self.test_seq(arr.diagonal())),
+                self.test_seq(np.diag(np.fliplr(arr)))
+        )
+
+    def first_calc(self):
+        result = 0
+        windows = self.get_windows()
+        for i in range(0, windows.shape[0]):
+            for j in range(0, windows.shape[1]):
+                tst_window = windows[i][j]
+                result += self.cnt_window(tst_window)
+        return result
+
     def __init__(self, file_path='../input.txt'):
         self.data = self.input_open(file_path)
-        # print(self.get_windows())
 
 
 if __name__ == '__main__':
     sol = Solution()
+    print(sol.first_calc())
