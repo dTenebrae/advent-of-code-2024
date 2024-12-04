@@ -24,7 +24,7 @@ class Solution:
         return sum(map(self.check, self.data))
 
     def second_calc(self):
-        return sum(map(lambda x: sum([self.check(x[:i] + x[i + 1:]) for i in range(len(x))]) > 0, self.data))
+        return sum(map(lambda x: any([self.check(x[:i] + x[i + 1:]) for i in range(len(x))]), self.data))
 
 
 if __name__ == '__main__':
