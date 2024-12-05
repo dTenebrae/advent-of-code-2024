@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 class Solution:
 
     @staticmethod
@@ -35,6 +36,16 @@ class Solution:
                     return False
         return True
 
+    def fix_order(self, line: list) -> list:
+        if self.is_line_valid(line):
+            return line
+
+        for idx, num in enumerate(line):
+            for rule in self.rules[num]:
+                if rule in line and line.index(rule) < idx:
+                    line[idx], line[line.index(rule)] = line[line.index(rule)], line[idx]
+                    return self.fix_order(line)
+
     def first_calc(self):
         result = 0
         for line in self.progs:
@@ -42,7 +53,16 @@ class Solution:
                 result += int(line[len(line) // 2])
         return result
 
+    def second_calc(self):
+        result = 0
+        for line in self.progs:
+            if not self.is_line_valid(line):
+                correct_line = self.fix_order(line)
+                result += int(correct_line[len(line) // 2])
+        return result
+
 
 if __name__ == '__main__':
     sol = Solution()
     print(sol.first_calc())
+    print(sol.second_calc())
