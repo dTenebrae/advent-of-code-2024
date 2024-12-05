@@ -1,5 +1,8 @@
 import numpy as np
 
+# Doesn't really matter which number it is, but it should not interfere with conv_map values
+FILL_VALUE = -10
+
 
 class Solution:
 
@@ -23,7 +26,7 @@ class Solution:
         return np.pad(np.array(data),
                       [(0, 3), (0, 3)],
                       mode='constant',
-                      constant_values=-1)
+                      constant_values=FILL_VALUE)
 
     def get_windows(self, window_shape=(4, 4)):
         """
@@ -65,7 +68,7 @@ class Solution:
         result = 0
 
         if change_x:
-            self.data[self.data == 1] = -10
+            self.data[self.data == 1] = FILL_VALUE
 
         windows = self.get_windows(window_shape=window_shape)
         for i in range(0, windows.shape[0]):
