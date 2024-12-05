@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Solution:
 
     @staticmethod
@@ -41,21 +42,26 @@ class Solution:
     def cnt_window_first(self, arr):
         """
         Testing 2 diagonals and 1st row and column for being monotonic and sum that
-        :param arr:
-        :return:
         """
         return sum(
             (
                 self.test_seq(arr[:, 0]),
                 self.test_seq(arr[0, :]),
                 self.test_seq(arr.diagonal())),
-                self.test_seq(np.diag(np.fliplr(arr)))
+            self.test_seq(np.diag(np.fliplr(arr)))
         )
 
     def cnt_window_second(self, arr):
         return self.test_seq(arr.diagonal()) and self.test_seq(np.diag(np.fliplr(arr)))
 
     def final_count(self, f, window_shape=(4, 4), change_x=False):
+        """
+        Counting valid entries
+        :param f: validating function
+        :param window_shape: rolling window shape. For second question equals to (3, 3)
+        :param change_x: Should we change "X" to another number. Needed for second question
+        :return:
+        """
         result = 0
 
         if change_x:
