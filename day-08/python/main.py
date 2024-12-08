@@ -71,32 +71,44 @@ class Solution:
     def euc_dist(p1, p2):
         return np.linalg.norm(p1 - p2)
 
-    def find_antinodes(self, line, start_node, end_node, dist):
+    @staticmethod
+    def is_almost_multiple(a, b, epsilon=1e-10) -> bool:
+        if b == 0:
+            return False
+        # Вычисляем ближайшее целое k
+        k = round(a / b)
+        # Абсолютное отклонение
+        delta = abs(a - k * b)
+        # Возвращаем результат
+        return delta <= epsilon
+
+    def find_antinodes(self, line, start_node, end_node, dist, resonant):
         result = []
         for node in line:
-            if (node == start_node).all() or (node == end_node).all():
+            if not resonant and ((node == start_node).all() or (node == end_node).all()):
                 continue
             node_dist = self.euc_dist(node, start_node)
+            if resonant:
+                if self.is_almost_multiple(node_dist, dist):
+                    result.append(node)
+                    continue
             if node_dist == dist:
                 result.append(node)
         return result
 
-    def first_calc(self):
+    def calc(self, resonant=False):
         result = []
         for char in self.charset:
             for x1, y1, x2, y2, dx, dy in self.delta_xy(ord(char)):
                 line = self.find_line(x1, y1, x2, y2, dx, dy)
                 dist = self.euc_dist(np.array((x1, y1)), np.array((x2, y2)))
-                antinodes = self.find_antinodes(line, np.array((x1, y1)), np.array((x2, y2)), dist)
+                antinodes = self.find_antinodes(line, np.array((x1, y1)), np.array((x2, y2)), dist, resonant=resonant)
                 if antinodes:
                     result.extend(antinodes)
-        print(self.data)
-        for node in result:
-            self.data[node[0], node[1]] = 7
-        print(self.data)
         return len(set(result))
 
 
 if __name__ == '__main__':
     sol = Solution()
-    print(sol.first_calc())
+    print(sol.calc(resonant=False))
+    print(sol.calc(resonant=True))
