@@ -52,7 +52,7 @@ class Solution:
                 break
             if tr_array[front_ptr] != EMPTY:
                 continue
-            for back_ptr in range(end_ptr, -1, -1):
+            for back_ptr in range(end_ptr, front_ptr, -1):
                 if tr_array[back_ptr] == EMPTY:
                     continue
                 tr_array[front_ptr], tr_array[back_ptr] = tr_array[back_ptr], tr_array[front_ptr]
@@ -89,7 +89,7 @@ class Solution:
 
 
 if __name__ == '__main__':
-    sol = Solution()
+    sol = Solution("../input.txt")
     transformed = sol.transform()
     compacted_first = sol.compactify_first(transformed.copy())
     print(sol.summarize(compacted_first))
