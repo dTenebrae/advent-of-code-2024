@@ -14,7 +14,7 @@ class Solution:
     def input_open(file_path):
         try:
             with open(file_path, "r") as f:
-                data = list(map(lambda x: list(map(int, list(x.strip()))), f.readlines()))
+                data = list(map(lambda x: list(map(lambda y: ord(y) if y == '.' else int(y), list(x.strip()))), f.readlines()))
         except FileNotFoundError:
             print("File not found. Exiting")
             exit(1)
@@ -25,23 +25,15 @@ class Solution:
         self.data = self.input_open(file_path)
         self.global_cnt = 0
 
-    # def print_tree(self, tree: Node):
-    #     print(f"level:{tree.level} - {tree.coordinates}")
-    #     if not tree.children:
-    #         return
-    #     for child in tree.children:
-    #         return self.print_tree(child)
-
     def print_tree(self, root: Node, marker_str="+- ", level_markers=None):
         if level_markers is None:
             level_markers = []
         empty_str = " " * len(marker_str)
         connection_str = "|" + empty_str[:-1]
         level = len(level_markers)
-        mapper = lambda draw: connection_str if draw else empty_str
-        markers = "".join(map(mapper, level_markers[:-1]))
+        markers = "".join(map(lambda draw: connection_str if draw else empty_str, level_markers[:-1]))
         markers += marker_str if level > 0 else ""
-        print(f"{markers}({root.coordinates[0]}, {root.coordinates[1]})")
+        print(f"{markers}{root.level} -> ({root.coordinates[0]}, {root.coordinates[1]})")
         for i, child in enumerate(root.children):
             is_last = i == len(root.children) - 1
             self.print_tree(child, marker_str, [*level_markers, not is_last])
@@ -77,12 +69,10 @@ class Solution:
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
             if self.is_valid(nx, ny, test_weight):
-                if int(nx) == 2 and int(ny) == 2:
-                    print()
                 leaf.children.append(Node(level=test_weight, children=[], coordinates=(nx, ny)))
 
         for child in leaf.children:
-            return self.grow_tree(child)
+            self.grow_tree(child)
 
 
 if __name__ == '__main__':
