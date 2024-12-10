@@ -23,7 +23,6 @@ class Solution:
 
     def __init__(self, file_path='../input.txt'):
         self.data = self.input_open(file_path)
-        self.global_cnt = 0
 
     def print_tree(self, root: Node, marker_str="+- ", level_markers=None):
         if level_markers is None:
@@ -53,13 +52,31 @@ class Solution:
 
         return forest
 
+    @staticmethod
+    def find_nodes_at_level(root, target_level=9):
+        """Находит все узлы на заданном уровне."""
+        result = []
+
+        def dfs(node):
+            if node.level == target_level:
+                result.append(node)
+            for child in node.children:
+                dfs(child)
+
+        dfs(root)
+        return result
+
+    def count_nodes(self, root: Node):
+        start_node = (root.coordinates[0], root.coordinates[1])
+        end_nodes = [(item.coordinates[0], item.coordinates[1]) for item in self.find_nodes_at_level(root)]
+        return start_node, end_nodes
+
     def is_valid(self, x, y, weight):
         return (0 <= x < self.data.shape[0] and 0 <= y < self.data.shape[1]
                 and self.data[x, y] == weight)
 
     def grow_tree(self, leaf):
         if leaf.level == 9:
-            self.global_cnt += 1
             return
 
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -74,8 +91,25 @@ class Solution:
         for child in leaf.children:
             self.grow_tree(child)
 
+    def first_calc(self, forest):
+        result = 0
+
+        for tree in forest:
+            result += len(set(self.count_nodes(tree)[1]))
+        return result
+
+    def second_calc(self, forest):
+        result = 0
+
+        for tree in forest:
+            result += len(self.count_nodes(tree)[1])
+        return result
+
 
 if __name__ == '__main__':
-    sol = Solution("../test.txt")
-    sol.create_forest()
-    print(sol.global_cnt)
+    sol = Solution()
+    forest = sol.create_forest()
+    print(sol.first_calc(forest))
+    print(sol.second_calc(forest))
+
+
