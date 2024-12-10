@@ -89,7 +89,7 @@ class Solution:
 
 
 if __name__ == '__main__':
-    sol = Solution("../input.txt")
+    sol = Solution()
     transformed = sol.transform()
     compacted_first = sol.compactify_first(transformed.copy())
     print(sol.summarize(compacted_first))
