@@ -23,18 +23,15 @@ class Solution:
             0: (1,),
             1: (2024,),
         }
+        self.cache = defaultdict(int)
+        for num in self.data:
+            self.cache[num] += 1
 
     @staticmethod
     def num_split_str(num, num_len) -> tuple:
         str_stone = f"{num}"
         middle = num_len // 2
         return int(str_stone[:middle]), int(str_stone[middle:])
-
-    @staticmethod
-    def num_split_math(num) -> tuple:
-        n0 = 1 + int(math.log10(num))
-        div = 10 ** (n0 / 2)
-        return int(num // div), int(num % div)
 
     def process_stones(self, stone: int):
         if self.memo.get(stone):
@@ -49,72 +46,20 @@ class Solution:
             return self.memo[stone]
 
     def first_calc(self, n=25):
-        stone_list = self.data.copy()
+
         for _ in range(n):
-            tmp_list = []
-            for stone in stone_list:
-                result = self.process_stones(stone)
-                tmp_list.extend(result)
-            stone_list = tmp_list
-        return stone_list
+            tmp_freq = defaultdict(int)
+            for num, cnt in self.cache.items():
+                for item in self.process_stones(num):
+                    tmp_freq[item] += cnt
+            self.cache = tmp_freq
 
-    def test_calc(self, n=25):
-        stone_list = self.data.copy()
-        for _ in range(n):
-            stone_list = list(chain.from_iterable(map(self.process_stones, stone_list)))
-        return stone_list
-
-    @staticmethod
-    def simulate_blinks(initial_stones, blinks):
-        # Initialize frequency dictionary
-        stone_freq = defaultdict(int)
-        for stone in initial_stones:
-            stone_freq[stone] += 1
-
-        for i in range(1, blinks + 1):
-            start_time = time.perf_counter()
-
-            new_stone_freq = defaultdict(int)
-
-            # Process each unique stone and its frequency
-            for stone, count in stone_freq.items():
-                if stone == '0':
-                    new_stone_freq['1'] += count
-                elif len(stone) % 2 == 0:
-                    half = len(stone) // 2
-                    left = str(int(stone[:half]))
-                    right = str(int(stone[half:]))
-                    new_stone_freq[left] += count
-                    new_stone_freq[right] += count
-                else:
-                    # Multiply by 2024 and convert back to string
-                    new_value = str(int(stone) * 2024)
-                    new_stone_freq[new_value] += count
-
-            # Update stone frequencies for the next iteration
-            stone_freq = new_stone_freq
-
-            # Calculate total stones
-            total_stones = sum(stone_freq.values())
-            end_time = time.perf_counter()
-            time_taken = end_time - start_time
-            print(f"Blink {i}: {total_stones} stones > {time_taken:.6f} seconds")
-
+        return sum(self.cache.values())
 
 if __name__ == '__main__':
-    sol = Solution("../test.txt")
-    # n = 25
-    # start = time.time()
-    # result = len(sol.first_calc(n))
-    # end = time.time()
-    # print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
-    # n = 41
-    # start = time.time()
-    # result = len(sol.first_calc(n))
-    # end = time.time()
-    # print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
-    sol.simulate_blinks(list(map(str, sol.data)), 41)
-    # start = time.time()
-    # result = len(sol.test_calc(n))
-    # end = time.time()
-    # print(f"iterations: {n:<5} elapsed time: {end - start:3f}s result: {result:^5}")
+    sol = Solution()
+    n = 75
+    start = time.time()
+    result = sol.first_calc(n)
+    end = time.time()
+    print(f"iterations: {n:<5} elapsed time: {end - start:3f}s result: {result:^5}")
