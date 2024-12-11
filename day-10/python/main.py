@@ -107,7 +107,7 @@ class Solution:
 
 
 if __name__ == '__main__':
-    sol = Solution()
+    sol = Solution("../test.txt")
     forest = sol.create_forest()
     print(sol.first_calc(forest))
     print(sol.second_calc(forest))
