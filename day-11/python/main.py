@@ -1,6 +1,7 @@
 import time
 import math
 from itertools import chain
+from collections import defaultdict
 
 
 class Solution:
@@ -63,19 +64,56 @@ class Solution:
             stone_list = list(chain.from_iterable(map(self.process_stones, stone_list)))
         return stone_list
 
+    @staticmethod
+    def simulate_blinks(initial_stones, blinks):
+        # Initialize frequency dictionary
+        stone_freq = defaultdict(int)
+        for stone in initial_stones:
+            stone_freq[stone] += 1
+
+        for i in range(1, blinks + 1):
+            start_time = time.perf_counter()
+
+            new_stone_freq = defaultdict(int)
+
+            # Process each unique stone and its frequency
+            for stone, count in stone_freq.items():
+                if stone == '0':
+                    new_stone_freq['1'] += count
+                elif len(stone) % 2 == 0:
+                    half = len(stone) // 2
+                    left = str(int(stone[:half]))
+                    right = str(int(stone[half:]))
+                    new_stone_freq[left] += count
+                    new_stone_freq[right] += count
+                else:
+                    # Multiply by 2024 and convert back to string
+                    new_value = str(int(stone) * 2024)
+                    new_stone_freq[new_value] += count
+
+            # Update stone frequencies for the next iteration
+            stone_freq = new_stone_freq
+
+            # Calculate total stones
+            total_stones = sum(stone_freq.values())
+            end_time = time.perf_counter()
+            time_taken = end_time - start_time
+            print(f"Blink {i}: {total_stones} stones > {time_taken:.6f} seconds")
+
 
 if __name__ == '__main__':
-    sol = Solution()
-    n = 25
-    start = time.time()
-    result = len(sol.first_calc(n))
-    end = time.time()
-    print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
-    n = 41
-    start = time.time()
-    result = len(sol.first_calc(n))
-    end = time.time()
-    print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
+    sol = Solution("../test.txt")
+    # n = 25
+    # start = time.time()
+    # result = len(sol.first_calc(n))
+    # end = time.time()
+    # print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
+    # n = 41
+    # start = time.time()
+    # result = len(sol.first_calc(n))
+    # end = time.time()
+    # print(f"iterations: {n:<2} elapsed time: {end - start:3f}s result: {result}")
+    sol.simulate_blinks(list(map(str, sol.data)), 41)
     # start = time.time()
     # result = len(sol.test_calc(n))
     # end = time.time()
