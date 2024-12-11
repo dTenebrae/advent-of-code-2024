@@ -45,7 +45,7 @@ class Solution:
             self.memo[stone] = stone * 2024,
             return self.memo[stone]
 
-    def first_calc(self, n=25):
+    def calc(self, n=25):
 
         for _ in range(n):
             tmp_freq = defaultdict(int)
@@ -58,8 +58,8 @@ class Solution:
 
 if __name__ == '__main__':
     sol = Solution()
-    n = 75
-    start = time.time()
-    result = sol.first_calc(n)
-    end = time.time()
-    print(f"iterations: {n:<5} elapsed time: {end - start:3f}s result: {result:^5}")
+    for n in (25, 75):
+        start = time.time()
+        result = sol.calc(n)
+        end = time.time()
+        print(f"iterations: {n:<5} elapsed time: {end - start:3f}s result: {result:^5}")
