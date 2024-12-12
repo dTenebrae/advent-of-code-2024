@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.ndimage import label
 
 FILL_VALUE = -1
 
@@ -36,28 +37,43 @@ class Solution:
         self.data = self.input_open(file_path)
         self.charset = self.get_charset(file_path)
 
-    def count_square(self, num):
-        return len(np.where(self.data == ord(num))[0])
+    @staticmethod
+    def count_square(region):
+        return len(region)
 
-    def count_perim(self, num):
+    def count_perim(self, num, region):
         result = 0
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        for x, y in zip(*np.where(self.data == ord(num))):
+        for reg in region:
+            x, y = reg
             for dx, dy in directions:
                 nx, ny = x + dx, y + dy
                 if self.data[nx, ny] == FILL_VALUE or self.data[nx, ny] != ord(num):
                     result += 1
         return result
 
+    def extract_regions(self, value):
+        binary_matrix = (self.data == ord(value)).astype(int)
+        labeled_matrix, num_features = label(binary_matrix)
+
+        regions = []
+        for region_id in range(1, num_features + 1):
+            coords = np.argwhere(labeled_matrix == region_id)
+            regions.append(coords.tolist())
+
+        return regions
+
     def first_calc(self):
         result = 0
         for char in sol.charset:
-            square = self.count_square(char)
-            perim = self.count_perim(char)
-            result += square * perim
+            region = self.extract_regions(char)
+            for reg in region:
+                square = self.count_square(reg)
+                perim = self.count_perim(char, reg)
+                result += square * perim
         return result
 
 
 if __name__ == '__main__':
-    sol = Solution('../test2.txt')
+    sol = Solution()
     print(sol.first_calc())
