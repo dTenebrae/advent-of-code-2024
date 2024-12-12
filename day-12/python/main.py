@@ -59,5 +59,5 @@ class Solution:
 
 
 if __name__ == '__main__':
-    sol = Solution('../test.txt')
+    sol = Solution('../test2.txt')
     print(sol.first_calc())
