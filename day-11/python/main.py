@@ -54,7 +54,8 @@ class Solution:
 
         return sum(self.cache.values())
 
-if __name__ == '__main__':
+
+if __name__ == '__main  __':
     sol = Solution()
     for n in (25, 75):
         start = time.time()
