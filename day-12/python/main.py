@@ -61,17 +61,20 @@ class Solution:
 
     def real_counter(self, left: list, right: list) -> int:
         result = 0
+        # Сортируем по 2-му элементу кортежа с координатами
+        # так как мы смотрим только вертикальные стороны(горизонтальных будет столько же)
         left = sorted(left, key=lambda x: x[1])
         right = sorted(right, key=lambda x: x[1])
+        # Формируем группы по столбцам
         split_left = [list(g) for k,g in groupby(left, lambda x: x[1])]
         split_right = [list(g) for k,g in groupby(right, lambda x: x[1])]
+        # считаем сколько монотонных последовательностей среди таких групп
         for side in [split_left, split_right]:
             for item in side:
                 result += self.n_monotonics(item)
         return result * 2
 
     def count_sides(self, num, region):
-        result = 0
         left_side = []
         right_side = []
         directions = [(0, -1), (0, 1)]
