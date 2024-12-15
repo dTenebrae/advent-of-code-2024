@@ -1,6 +1,6 @@
 import re
 
-SECOND_ADJ = '10000000000000'
+SECOND_ADJ = 10000000000000
 
 
 class Solution:
@@ -22,8 +22,7 @@ class Solution:
     def __init__(self, file_path='../input.txt'):
         self.data = self.input_open(file_path)
 
-    @staticmethod
-    def cramer_solver(equation: list):
+    def cramer_solver(self, equation: list):
         det = equation[0] * equation[3] - equation[2] * equation[1]
         det_a = equation[4] * equation[3]  - equation[2] * equation[5]
         det_b = equation[0] * equation[5]  - equation[4] * equation[1]
@@ -32,32 +31,56 @@ class Solution:
             return None
 
         a, b = det_a / det, det_b / det
-        if (a != int(a)) or (b != int(b)):
+
+        if not self.are_the_same(a) or not self.are_the_same(b) or a < 0 or b < 0:
+                return None
+
+        return round(a), round(b)
+
+    def solver(self, equation: list):
+        # B = (p_y - p_x * a_y / a_x) / (b_y - a_y * b_x / x_a)
+        # A = p_x / a_x - B * b_x / a_x
+
+        b = (equation[5] - equation[4] * equation[1] / equation[0]) / (equation[3] - equation[1] * equation[2] / equation[0])
+        a = equation[4] / equation[0] - b * equation[2] / equation[0]
+
+        if not self.are_the_same(a) or not self.are_the_same(b) or a < 0 or b < 0:
             return None
+
         return int(a), int(b)
 
-    def get_tokens(self, item):
-        res = self.cramer_solver(item)
+    @staticmethod
+    def are_the_same(x, epsilon=1e-9) -> bool:
+        delta = abs(round(x) - x)
+        return delta <= epsilon
+
+    @staticmethod
+    def get_tokens(item, f):
+        res = f(item)
         if res is None:
             return 0
         a, b = res
         return 3 * a + 1 * b
 
+
     def first_calc(self):
-        result = sum([self.get_tokens(item) for item in self.data])
+        result = sum([self.get_tokens(item, self.cramer_solver) for item in self.data])
         return result
 
     def adjust_data(self):
         def update_data(seq):
             for num in range(-1, -3, -1):
-                seq[num] = int(SECOND_ADJ + f"{seq[num]}")
+                seq[num] = SECOND_ADJ + seq[num]
 
         for item in self.data:
             update_data(item)
 
     def second_calc(self):
+        self.solver(self.data[0])
         self.adjust_data()
-        return max([self.get_tokens(item) for item in self.data])
+        result = [self.get_tokens(item, self.cramer_solver) for item in self.data]
+        result = [item for item in result if item]
+        return max(result)
 
 
 if __name__ == '__main__':
