@@ -1,5 +1,7 @@
 import re
 
+SECOND_ADJ = '10000000000000'
+
 
 class Solution:
 
@@ -34,18 +36,31 @@ class Solution:
             return None
         return int(a), int(b)
 
+    def get_tokens(self, item):
+        res = self.cramer_solver(item)
+        if res is None:
+            return 0
+        a, b = res
+        return 3 * a + 1 * b
+
     def first_calc(self):
-        result = 0
-        for item in self.data:
-            res = self.cramer_solver(item)
-            if res is None:
-                continue
-            a, b = res
-            result += 3 * a + b
+        result = sum([self.get_tokens(item) for item in self.data])
         return result
 
+    def adjust_data(self):
+        def update_data(seq):
+            for num in range(-1, -3, -1):
+                seq[num] = int(SECOND_ADJ + f"{seq[num]}")
+
+        for item in self.data:
+            update_data(item)
+
+    def second_calc(self):
+        self.adjust_data()
+        return max([self.get_tokens(item) for item in self.data])
 
 
 if __name__ == '__main__':
     sol = Solution()
     print(sol.first_calc())
+    print(sol.second_calc())
